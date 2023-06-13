@@ -1,0 +1,314 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/Layout.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+
+        <form method="post" enctype="multipart/form-data">
+            <!-- Button trigger modal -->
+            <button style="display: none;" id ="btn_subcate" type="button" class="btn btn-primary" data-toggle="modal" data-target="#catedetail">
+                Launch demo modal
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="catedetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Sub Category</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="subid">                           
+                                
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button trigger modal -->
+            <button style="margin:20px 0px;" id="btnModel" type="button" class="btn btn-primary" onclick="Empty();" data-toggle="modal" data-target="#exampleModal">
+                Add New Category
+            </button>
+            <button style="margin:20px 0px; display:none;" id="btnModelUpdate" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Update
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label for="Name">Name</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="catename">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3" id="parrent" >
+                                    <label for="Name">Parrent</label>
+                                </div>
+                                <div class="col-lg-9" >
+                                    <div class="form-group">
+                                        <select  name="tags" id="allParrent" multiple class="form-control">
+                                        </select>
+                                    </div>
+                                </div>                              
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" id="btn-accept-add" class="btn btn-primary" onclick="AddCate();">AddCate</button>
+                            <button type="button" style="display:none;" id="btn-accept-update" class="btn btn-primary" onclick="UpdateCate(CateId)">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+        <table id="Blog" class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Name</th>              
+                    <th>CategorySub</th>                   
+                    <th>Update</th>
+                    <th>Delete</th>
+
+                </tr>
+            </thead>
+            <tbody id="allCate"></tbody>
+        </table>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    let url = 'http://localhost:5248/';
+
+    $(document).ready(function () {
+        
+        GetAllCate();
+        GetAllParrent();
+
+    });
+    
+    var CateId;
+    var selectedVal = [];
+
+    function GetAllCate() {
+        
+        $.ajax({
+            url: url + 'api/ApiCate',
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+
+                let table = '';
+                for (var i = 0; i < len; ++i) {
+                    table = table + '<tr>';
+                    table = table + '<td>' + res[i].name + '</td>';
+                    table = table + '<td>' + '<button type="button" class="btn btn-warning" onclick="GetSubCate(\'' + res[i].id + '\')">Detail</button> </td>';
+                    table = table + '<td>' + '<button type="button" class="btn btn-warning" onclick="GetCate(\'' + res[i].id + '\')">Update</button> </td>';
+                    table = table + '<td> <button type="button" class="btn btn-danger" onclick="DeleteCate(\'' + res[i].id + '\')">Delete</button> </td>';
+                    table = table + '</tr>';
+                }
+
+                document.getElementById('allCate').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+    function GetSubCate(id) {
+        $("#btn_subcate").trigger('click');
+
+        $.ajax({
+            url: url + 'api/ApiCate/' + id,
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+                let table = '';
+                   for (var i = 0; i < len; ++i) {
+                        table = table + '<p>' + res[i].id + '. ' + res[i].name + '</p>';
+                   }
+                document.getElementById('subid').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+    var localeDate = (new Date()).toLocaleDateString();
+
+    function AddCate() {
+     
+        var tag = $("#allParrent option:selected").val();
+
+        $.each($("#allParrent option:selected"), function () {
+            selectedVal.push($(this).val());
+        });     
+        var hp = 0;
+        if(selectedVal == "")
+        {
+            selectedVal.push(0);
+        } 
+        var parrentId = selectedVal.toString();
+        $.ajax({
+            url: url + 'api/ApiCate' + "?name=" + $("#catename").val() + "&parrent=" + parrentId + "&hp= " + hp,
+            method: "POST",
+            contentType: 'json',
+            dataType: 'json',
+            data: JSON.stringify(parrentId),
+            error: function (res) {
+                alert("Them moi khong thanh cong");
+            },
+            success: function (res) {
+                alert("Them moi thanh cong");
+                $('.close').trigger('click');
+
+                GetAllCate();
+                Empty();
+            },
+            fail: function (response) { }
+        })
+    }
+    
+    function GetCate(id) {
+        $("#btnModel").trigger('click');
+        $("#btn-accept-add").css("display", "none");
+        $("#btn-accept-update").css("display", "block");
+        $("#parrent").css("display", "none");
+        $("#allParrent").css("display", "none");
+        $.ajax({
+            url: url + 'api/ApiCate/constraint/' + id,
+            method: 'GET',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (res) {
+            },
+            success: function (res) {             
+                CateId = res.id;
+                $("#catename").val(res.name)
+                
+            },
+            fail: function (response) { }
+
+        })
+    }
+    
+    function UpdateCate(id) {  
+       
+        $.ajax({
+
+            url: url + "api/ApiCate/" + id + "?name=" + $("#catename").val() ,
+            method: "PUT",
+            contentType: 'json',
+            dataType: 'json',
+            error: function (res) {
+                alert("Sua khong thanh cong");
+            },
+            success: function (res) {
+                alert("Sua thanh cong");
+                GetAllCate();
+                $('.close').trigger('click');
+
+            },
+            fail: function (response) { }
+        })
+    }
+
+    function Empty() {
+        $("#btn-accept-add").css("display", "block");
+        $("#btn-accept-update").css("display", "none");
+        $("#parrent").css("display", "block");
+        $("#allParrent").css("display", "block");
+        $.ajax({
+            error: function (res) {
+
+            },
+            success: function (res) {
+                $("#catename").val(''),
+                    $("#parrent").val('')
+                   
+            },
+            fail: function (response) { }
+        })
+    }
+
+    function DeleteCate(id) {
+        if (confirm("Ban co muon xoa khong?")) {
+            $.ajax({
+                url: url + "api/ApiCate/" + id,
+                method: "DELETE",
+                contentType: 'json',
+                dataType: 'json',
+                error: function (res) {
+                    alert("Xoa khong thanh cong");
+                },
+                success: function (res) {
+                    alert("Xoa thanh cong");
+                    GetAllCate();
+                },
+                fail: function (response) { }
+            })
+        }
+    }
+    function GetAllParrent() {
+        $.ajax({
+            url: url + 'api/ApiCate/',
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+
+                let table = '';
+                for (var i = 0; i < len; ++i) {
+                    table = table + '<option value="' + res[i].id + '">' + res[i].name + '</option>';
+                }
+                document.getElementById('allParrent').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+</script>
+

@@ -1,0 +1,482 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/Layout.cshtml";
+}
+@using Project.Models
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+
+        <form method="post" enctype="multipart/form-data">
+
+            <!-- Button trigger modal -->
+            <button style="margin:20px 0px;" id="btnModel" onclick="Empty();" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Add Product
+            </button>
+            <button style="margin:20px 0px; display:none;" id="btnModelUpdate" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Update
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Tên Sản Phẩm</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="Name">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Tags</label>
+                                </div>
+                                <div class="col-lg-9">
+
+                                    <div class="form-group">
+                                        <select name="tags" id="allTag" multiple class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Category</label>
+                                </div>
+                                <div class="col-lg-9">
+
+                                    <div class="form-group" style="height:150px; overflow:scroll;">
+                                        <table class="table">
+                                            <tbody id="allCategory">
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Mo ta Sản Phẩm</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <textarea name="Description" id="Description" class="form-control" ckeditor="true" ismandatory="false">                                            
+
+                                        </textarea>
+                                        <script language="javascript">
+                                            CKEDITOR.replace("Description");
+                                        </script>
+
+                                        @*<input type="text" class="form-control" id="Description">*@
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Noi dung Sản Phẩm</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <textarea name="Content" id="Content" class="form-control" ckeditor="true" ismandatory="false">                                            
+
+                                        </textarea>
+                                        <script language="javascript">
+                                            CKEDITOR.replace("Content");
+                                        </script>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Anh Sản Phẩm</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <input type="file" class="form-control" id="Photo">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="Name">Hot</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <input type="checkbox" id="Hot" style="margin-bottom: 24px;">
+                                </div>
+
+
+
+                                <div class="col-lg-3">
+                                    <label for="PriceIn">Giá Nhập</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="PriceIn">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label for="PriceOut">Discount</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="Discount">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" id="btn-accept-add" class="btn btn-primary" onclick="AddProduct();">AddProduct</button>
+                            <button type="button" style="display:none;" id="btn-accept-update" class="btn btn-primary" onclick="UpdateProduct(ProdId);">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+        <table id="KhachHang" class="table table-striped table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Mã SP</th>
+                    <th>Tên SP</th>
+                    <th>Photo</th>
+
+                    <th>Hot</th>
+                    <th>Giá Nhập</th>
+                    <th>Discount</th>
+
+                    <th>Update</th>
+                    <th>Delete</th>
+
+                </tr>
+            </thead>
+            <tbody id="allKH"></tbody>
+        </table>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    let url = 'http://localhost:5248/';
+
+    $(document).ready(function () {
+        GetAllProducts();
+        GetAllTag();
+        GetAllCategory();
+    });
+    var photo;
+    var ProdId;
+    var Hot;
+    var selectedVal = [];
+    var array = [];
+
+    function GetAllProducts() {
+
+        $.ajax({
+            url: url + 'api/Values',
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+
+                let table = '';
+                for (var i = 0; i < len; ++i) {
+                    table = table + '<tr>';
+                    table = table + '<td>' + res[i].id + '</td>';
+                    table = table + '<td>' + res[i].name + '</td>';
+                    
+                    if (res[i].photo != null) {
+                        table = table + '<td>' +
+                            '<img src="/Upload/Products/' + res[i].photo + '" style = "width:100px;" >' + '</td>';
+                    }
+
+                    if (res[i].hot == 1) {
+                        table = table + '<td><span><i class="fa fa-calendar-check-o" > </i></span ></td>';
+                    }
+                    else {
+                        table = table + '<td></td>';
+                    }
+                    table = table + '<td>' + res[i].price + '</td>';
+                    table = table + '<td>' + res[i].discount + '</td>';
+                    table = table + '<td> <button type="button" class="btn btn-warning" onclick="GetProduct(\'' + res[i].id + '\')">Update</button> </td>';
+                    table = table + '<td> <button type="button" class="btn btn-danger" onclick="DeleteProduct(\'' + res[i].id + '\')">Delete</button> </td>';
+                    table = table + '</tr>';
+                }
+
+                document.getElementById('allKH').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+
+    function AddProduct() {
+
+        uploadFiles();
+        var desc = CKEDITOR.instances['Description'].document.getBody().getHtml();
+        var cont = CKEDITOR.instances['Content'].document.getBody().getHtml();
+        //var tag = $("#allTag option:selected").val();
+
+        $.each($("#allTag option:selected"), function () {
+            selectedVal.push($(this).val());
+        });
+        var listId = selectedVal.toString();
+
+        var checkboxes = document.querySelectorAll('#allCategory input[type=checkbox]:checked');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            array.push(checkboxes[i].value);
+        }
+        var listCate = array.toString();
+
+
+        if ($('#Hot').is(':checked')) {
+            Hot = "1";
+        }
+        else {
+            Hot = "0";
+        }
+        $.ajax({
+            url: url + 'api/Values' + "?name=" + $("#Name").val() + "&description=" + desc + "&content=" + cont + "&photo=" + $("#Photo").val() + "&hot=" + Hot + "&price=" + $("#PriceIn").val() + "&discount=" + $("#Discount").val() + "&tag=" + listId + "&category=" + listCate,
+            method: "POST",
+            contentType: 'json',
+            dataType: 'json',
+            data: JSON.stringify(listId),
+            data: JSON.stringify(listCate),
+            error: function (res) {
+                alert("Them moi khong thanh cong");
+            },
+            success: function (res) {
+                alert("Them moi thanh cong");
+                $('.close').trigger('click');
+
+                GetAllProducts();
+                Empty();
+            },
+            fail: function (response) { }
+        })
+
+
+    }
+
+    function uploadFiles() {
+        //var input = document.getElementById(inputId); //get file input id
+        //var files = input.files; //get files
+        var files = document.getElementById('Photo').files;
+        var formData = new FormData(); //create form
+        if ($("#Photo").val() == '' && photo == null) {
+            alert("Please choose an image");
+        }
+
+        for (var i = 0; i != files.length; i++) {
+            formData.append("files", files[i]); //loop through all files and append
+        }
+
+        $.ajax(
+            {
+                url: url + 'api/Values' + '/Insert',
+                data: formData, // send it as formData
+                processData: false,
+                contentType: false,
+                type: "POST", //type is post as we will need to post files
+                success: function (data) {
+
+                }
+            }
+        );
+    }
+
+    function GetProduct(id) {
+        $("#btnModelUpdate").trigger('click');
+        $("#btn-accept-add").css("display", "none");
+        $("#btn-accept-update").css("display", "block");
+        $.ajax({
+            url: url + 'api/Values/' + id,
+            method: 'GET',
+            contentType: 'json',
+            dataType: 'json',
+            error: function (res) {
+            },
+            success: function (res) {
+                if (res.hot == "1") {
+                    $("#Hot").prop('checked', true);
+                }
+                else {
+                    $("#Hot").prop('checked', false);
+                }
+                photo = res.photo;
+                ProdId = res.id;
+
+                $("#Name").val(res.name),
+
+                    CKEDITOR.instances['Description'].setData(res.description),
+                    CKEDITOR.instances['Content'].setData(res.description),
+
+                    //$("#Hot").val(res.hot),
+                    $("#PriceIn").val(res.price),
+                    $("#Discount").val(res.discount),
+                    $("#Photo").val(res.photo)
+            },
+            fail: function (response) { }
+
+        })
+    }
+
+    function UpdateProduct(id) {
+        uploadFiles();
+        var desc = CKEDITOR.instances['Description'].document.getBody().getHtml();
+        var cont = CKEDITOR.instances['Content'].document.getBody().getHtml();
+        $.each($("#allTag option:selected"), function () {
+            selectedVal.push($(this).val());
+        });
+        var listId = selectedVal.toString();
+
+        var checkboxes = document.querySelectorAll('#allCategory input[type=checkbox]:checked');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            array.push(checkboxes[i].value);
+        }
+        var listCate = array.toString();
+
+        if ($('#Hot').is(':checked')) {
+            Hot = "1";
+        }
+        else {
+            Hot = "0";
+        }
+        if ($("#Photo").val() != '') {
+            photo = document.getElementById("Photo").value;
+        }
+        $.ajax({
+            url: url + "api/Values/" + id + "?name=" + $("#Name").val() + "&description=" + desc + "&content=" + cont + "&photo=" + photo + "&hot=" + Hot + "&price=" + $("#PriceIn").val() + "&discount=" + $("#Discount").val() + "&tag=" + listId + "&category=" + listCate,
+            method: "PUT",
+            contentType: 'json',
+            dataType: 'json',
+            data: JSON.stringify(listId),
+            data: JSON.stringify(listCate),
+            error: function (res) {
+                alert("Sua khong thanh cong");
+            },
+            success: function (res) {
+                alert("Sua thanh cong");
+                GetAllProducts();
+                Empty();
+                $('.close').trigger('click');
+
+            },
+            fail: function (response) { }
+        })
+    }
+
+    function DeleteProduct(id) {
+        if (confirm("Ban co muon xoa khong?")) {
+            $.ajax({
+                url: url + "api/Values/" + id,
+                method: "DELETE",
+                contentType: 'json',
+                dataType: 'json',
+                error: function (res) {
+                    alert("Xoa khong thanh cong");
+                },
+                success: function (res) {
+                    alert("Xoa thanh cong");
+                    GetAllProducts();
+                },
+                fail: function (response) { }
+            })
+        }
+    }
+
+    function Empty() {
+        $("#btn-accept-add").css("display", "block");
+        $("#btn-accept-update").css("display", "none");
+        $.ajax({
+            error: function (res) {
+
+            },
+            success: function (res) {
+                $("#Name").val(''),
+                    //$("#Description").val(''),
+                    //$("#Content").val(''),
+                    CKEDITOR.instances['Description'].setData(''),
+                    CKEDITOR.instances['Content'].setData(''),
+                    //$("#Hot").val(''),
+
+                    $("#Hot").prop('checked', false);
+                $("#PriceIn").val(''),
+                    $("#Discount").val(''),
+                    $("#Photo").val('')
+            },
+            fail: function (response) { }
+        })
+    }
+
+    function GetAllTag() {
+        $.ajax({
+            url: url + 'api/Values/GetTag',
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+
+                let table = '';
+                for (var i = 0; i < len; ++i) {
+                    table = table + '<option value="' + res[i].id + '">' + res[i].name + '</option>';
+                }
+                document.getElementById('allTag').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+
+    function GetAllCategory() {
+        $.ajax({
+            url: url + 'api/Values/GetCategory',
+            method: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (res) {
+
+            },
+            success: function (res) {
+                const len = res.length;
+
+                let table = '';
+                for (var i = 0; i < len; ++i) {
+                    table = table + '<tr><td><input type="checkbox" value = "' + res[i].id + '" name = "' + res[i].id + '" id = "' + res[i].id + '" /> ' + '<label for="' + res[i].id + '" > ' + res[i].name + '</label></td></tr>';
+                }
+                document.getElementById('allCategory').innerHTML = table;
+            },
+            fail: function (response) { }
+
+        })
+    }
+
+</script>
